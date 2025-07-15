@@ -13,7 +13,7 @@ interface LoginFormData {
 }
 
 export const LoginForm: React.FC = () => {
-  const { sendOTP, isLoading, showHome, googleLogin } = useAuth(); // Removed showSignup
+  const { sendOTP, isLoading, showHome,  googleLogin } = useAuth();
   const {
     register,
     handleSubmit,
@@ -103,9 +103,27 @@ export const LoginForm: React.FC = () => {
               <FcGoogle className="w-5 h-5" />
               Sign in with Google
             </button>
+
+            {/* ✅ Required invisible reCAPTCHA button for Firebase */}
+            <button
+              id="sign-in-button"
+              type="button"
+              style={{ display: "none" }}
+            >
+              reCAPTCHA
+            </button>
           </form>
 
           <div className="mt-6 text-center">
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+              Don't have an account?{" "}
+              <button
+                onClick={showSignup}
+                className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium transition-colors"
+              >
+                Sign up here
+              </button>
+            </p>
             <button
               onClick={showHome}
               className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
@@ -121,7 +139,7 @@ export const LoginForm: React.FC = () => {
             </p>
           </div>
 
-          {/* ✅ Firebase invisible reCAPTCHA target */}
+          {/* Optional: visible fallback reCAPTCHA container */}
           <div id="recaptcha-container"></div>
         </div>
       </div>
