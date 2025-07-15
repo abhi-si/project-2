@@ -8,6 +8,7 @@ import {
 } from "firebase/auth";
 import { auth } from "../firebase";
 
+// Extend global window for reCAPTCHA and confirmation
 declare global {
   interface Window {
     recaptchaVerifier: RecaptchaVerifier;
@@ -27,6 +28,7 @@ interface AuthContextType {
   sendOTP: (phoneNumber: string) => Promise<void>;
   verifyOTP: (otp: string) => Promise<boolean>;
   googleLogin: () => Promise<void>;
+  logout: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -34,7 +36,7 @@ const AuthContext = createContext<AuthContextType | null>(null);
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<any>(null);
   const [authMode, setAuthMode] = useState<AuthMode>("home");
   const [isLoading, setIsLoading] = useState(false);
   const [confirmationResult, setConfirmationResult] =
@@ -44,7 +46,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const showOTP = () => setAuthMode("otp");
   const showHome = () => setAuthMode("home");
 
-  // ✅ Load user from localStorage on first load
+  // ✅ Persist user on load
   useEffect(() => {
     const savedUser = localStorage.getItem("user");
     if (savedUser) {
@@ -97,7 +99,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     try {
       const result = await confirmationResult.confirm(otp);
       setUser(result.user);
-      localStorage.setItem("user", JSON.stringify(result.user)); // ✅ Save user
+      localStorage.setItem("user", JSON.stringify(result.user));
       showHome();
       return true;
     } catch (err) {
@@ -114,13 +116,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
       setUser(result.user);
-      localStorage.setItem("user", JSON.stringify(result.user)); // ✅ Save user
+      localStorage.setItem("user", JSON.stringify(result.user));
       showHome();
     } catch (error) {
       console.error("Google Sign-In Error:", error);
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const logout = () => {
+    setUser(null);
+    setAuthMode("home");
+    localStorage.removeItem("user");
+    localStorage.removeItem("chatrooms");
+    localStorage.removeItem("messages");
   };
 
   return (
@@ -135,6 +145,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         sendOTP,
         verifyOTP,
         googleLogin,
+        logout, // ✅ Added logout
       }}
     >
       {children}
