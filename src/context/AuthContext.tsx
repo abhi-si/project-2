@@ -9,7 +9,6 @@ import {
 } from "firebase/auth";
 import { auth } from "../firebase";
 
-// ✅ Extend window interface to include recaptchaVerifier and confirmationResult
 declare global {
   interface Window {
     recaptchaVerifier: RecaptchaVerifier;
@@ -17,14 +16,13 @@ declare global {
   }
 }
 
-type AuthMode = "home" | "login" | "signup" | "otp";
+type AuthMode = "home" | "login" | "otp"; // ❌ Removed 'signup'
 
 interface AuthContextType {
   user: any;
   authMode: AuthMode;
   isLoading: boolean;
   showLogin: () => void;
-  showSignup: () => void;
   showOTP: () => void;
   showHome: () => void;
   sendOTP: (phoneNumber: string) => Promise<void>;
@@ -44,20 +42,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     useState<ConfirmationResult | null>(null);
 
   const showLogin = () => setAuthMode("login");
-  const showSignup = () => setAuthMode("signup");
   const showOTP = () => setAuthMode("otp");
   const showHome = () => setAuthMode("home");
 
   const sendOTP = async (phoneNumber: string): Promise<void> => {
     try {
-      // ✅ Ensure reCAPTCHA is only initialized once
       if (!window.recaptchaVerifier) {
         const btn = document.getElementById("sign-in-button");
-        if (!btn) {
-          throw new Error("sign-in-button not found in DOM");
-        }
-
-        console.log("auth object:", auth); // Should NOT be undefined
+        if (!btn) throw new Error("sign-in-button not found in DOM");
 
         window.recaptchaVerifier = new RecaptchaVerifier(
           auth,
@@ -73,11 +65,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
           }
         );
 
-        await window.recaptchaVerifier.render(); // ✅ Ensure it renders before sending
+        await window.recaptchaVerifier.render();
       }
 
       const appVerifier = window.recaptchaVerifier;
-
       const result = await signInWithPhoneNumber(
         auth,
         phoneNumber,
@@ -91,7 +82,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       console.error("Error sending OTP:", error);
     }
   };
-  
 
   const verifyOTP = async (otp: string): Promise<boolean> => {
     if (!confirmationResult) return false;
@@ -130,7 +120,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         authMode,
         isLoading,
         showLogin,
-        showSignup,
         showOTP,
         showHome,
         sendOTP,

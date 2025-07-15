@@ -75,12 +75,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onLogin, onSignup }) => {
               >
                 Login to Your Account
               </button>
-              <button
-                onClick={onSignup}
-                className="w-full sm:w-auto px-8 py-4 border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-semibold rounded-2xl hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 hover:shadow-lg"
-              >
-                Create New Account
-              </button>
+             
             </div>
             
             {/* Trust Indicators */}
