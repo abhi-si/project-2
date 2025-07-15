@@ -1,5 +1,4 @@
-// AuthContext.tsx
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
 import {
   RecaptchaVerifier,
   signInWithPhoneNumber,
@@ -16,7 +15,7 @@ declare global {
   }
 }
 
-type AuthMode = "home" | "login" | "otp"; // ❌ Removed 'signup'
+type AuthMode = "home" | "login" | "otp";
 
 interface AuthContextType {
   user: any;
@@ -44,6 +43,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const showLogin = () => setAuthMode("login");
   const showOTP = () => setAuthMode("otp");
   const showHome = () => setAuthMode("home");
+
+  // ✅ Load user from localStorage on first load
+  useEffect(() => {
+    const savedUser = localStorage.getItem("user");
+    if (savedUser) {
+      setUser(JSON.parse(savedUser));
+      setAuthMode("home");
+    }
+  }, []);
 
   const sendOTP = async (phoneNumber: string): Promise<void> => {
     try {
@@ -89,6 +97,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     try {
       const result = await confirmationResult.confirm(otp);
       setUser(result.user);
+      localStorage.setItem("user", JSON.stringify(result.user)); // ✅ Save user
       showHome();
       return true;
     } catch (err) {
@@ -105,6 +114,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
       setUser(result.user);
+      localStorage.setItem("user", JSON.stringify(result.user)); // ✅ Save user
       showHome();
     } catch (error) {
       console.error("Google Sign-In Error:", error);
