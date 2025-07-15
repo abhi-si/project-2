@@ -146,28 +146,38 @@ A modern, responsive chat application built with React, TypeScript, and Tailwind
   - Tablet: 768px - 1024px
   - Desktop: > 1024px
 - **Adaptive Layout**: Collapsible sidebar on mobile
+  
+**#Technical Architecture**
+Project Structure
+src/
+├── components/           # React components
+│   ├── auth/            # Authentication components
+│   ├── chat/            # Chat interface components
+│   ├── dashboard/       # Dashboard components
+│   ├── home/            # Home page components
+│   └── layout/          # Layout components
+├── context/             # React Context providers
+├── types/               # TypeScript type definitions
+├── utils/               # Utility functions
+├── index.css           # Global styles
+└── App.tsx             # Main application component
 
-## ♿ Accessibility
-
-- **Keyboard Navigation**: Full keyboard support
-- **Screen Reader**: ARIA labels and descriptions
-- **Color Contrast**: WCAG AA compliance
-- **Focus Management**: Logical tab order
-- **Reduced Motion**: Respects user preferences
-
-## 🧪 Testing Strategy
-
-- **Unit Tests**: Component-level testing
-- **Integration Tests**: Context provider testing
-- **E2E Tests**: User flow validation
-- **Accessibility Tests**: ARIA compliance
-
-## 📦 Installation & Setup
-
-1. Clone the repository
-2. Install dependencies: `npm install`
-3. Start development server: `npm run dev`
-4. Build for production: `npm run build`
+**#Component Hierarchy**
+App
+├── ThemeProvider
+├── ToastProvider
+├── AuthProvider
+│   ├── HomePage (unauthenticated)
+│   ├── LoginForm
+│   ├── OTPVerification
+│   └── ChatProvider (authenticated)
+│       ├── Header
+│       └── Dashboard
+│           ├── SearchBar
+│           ├── ChatroomList
+│           └── ChatInterface
+│               ├── MessageList
+│               └── MessageInput
 
 ## 🔧 Configuration
 
@@ -181,34 +191,6 @@ A modern, responsive chat application built with React, TypeScript, and Tailwind
 - Update `src/types/index.ts` for type definitions
 - Customize `src/utils/validation.ts` for form validation
 
-## 🐛 Error Handling
-
-- **API Failures**: Graceful fallbacks for external API calls
-- **Form Errors**: Comprehensive validation with user feedback
-- **Network Issues**: Retry mechanisms and offline support
-- **Storage Errors**: Fallback to in-memory storage
-
-## 📈 Future Enhancements
-
-- **Real-time WebSocket**: Live message synchronization
-- **Push Notifications**: Browser notification support
-- **Voice Messages**: Audio recording and playback
-- **File Attachments**: Support for various file types
-- **Message Reactions**: Emoji reactions and interactions
-- **User Profiles**: Avatar and profile customization
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests for new features
-5. Submit a pull request
-
-## 📄 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
 ## 🙏 Acknowledgments
 
 - REST Countries API for country data
@@ -216,7 +198,3 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - Tailwind CSS for styling framework
 - React Hook Form for form handling
 - Zod for schema validation
-
----
-
-**Note**: This is a demonstration application with simulated AI responses. For production use, integrate with a real AI service like Google's Gemini API or OpenAI's GPT models.
