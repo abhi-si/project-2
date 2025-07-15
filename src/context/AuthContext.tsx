@@ -7,8 +7,8 @@ import {
   GoogleAuthProvider,
 } from "firebase/auth";
 import { auth } from "../firebase";
+import { useToast } from "./ToastContext"; // ✅ Adjust path as needed
 
-// Extend global window for reCAPTCHA and confirmation
 declare global {
   interface Window {
     recaptchaVerifier: RecaptchaVerifier;
@@ -36,17 +36,19 @@ const AuthContext = createContext<AuthContextType | null>(null);
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState(null);
   const [authMode, setAuthMode] = useState<AuthMode>("home");
   const [isLoading, setIsLoading] = useState(false);
   const [confirmationResult, setConfirmationResult] =
     useState<ConfirmationResult | null>(null);
 
+  const toast = useToast(); // ✅ Use toast from context
+
   const showLogin = () => setAuthMode("login");
   const showOTP = () => setAuthMode("otp");
   const showHome = () => setAuthMode("home");
 
-  // ✅ Persist user on load
+  // ✅ Load user from localStorage on first load
   useEffect(() => {
     const savedUser = localStorage.getItem("user");
     if (savedUser) {
@@ -99,7 +101,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     try {
       const result = await confirmationResult.confirm(otp);
       setUser(result.user);
-      localStorage.setItem("user", JSON.stringify(result.user));
+      localStorage.setItem("user", JSON.stringify(result.user)); // ✅ Save user
       showHome();
       return true;
     } catch (err) {
@@ -116,7 +118,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
       setUser(result.user);
-      localStorage.setItem("user", JSON.stringify(result.user));
+      localStorage.setItem("user", JSON.stringify(result.user)); // ✅ Save user
       showHome();
     } catch (error) {
       console.error("Google Sign-In Error:", error);
@@ -127,10 +129,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const logout = () => {
     setUser(null);
-    setAuthMode("home");
+    setAuthMode("login"); // ✅ Redirect to login
     localStorage.removeItem("user");
     localStorage.removeItem("chatrooms");
     localStorage.removeItem("messages");
+    toast.success("Logged out successfully!"); // ✅ Toast message
   };
 
   return (
@@ -145,7 +148,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         sendOTP,
         verifyOTP,
         googleLogin,
-        logout, // ✅ Added logout
+        logout,
       }}
     >
       {children}
